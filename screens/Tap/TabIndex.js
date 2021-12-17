@@ -1,21 +1,39 @@
 import React from 'react';
-import {Text} from 'react-native';
-import {Icon} from 'react-native-vector-icons/MaterialIcons';
+import {Button, Text, View} from 'react-native';
 
-export function HomeTapScreen() {
+export function HomeTapScreen({navigation}) {
   return (
-    <>
-      <Icon name="home" />
+    <View>
       <Text>Home</Text>
-    </>
+      <Button
+        title="Detail 1 열기"
+        onPress={() => {
+          navigation.push('Detail', {
+            id: 1,
+          });
+        }}
+      />
+    </View>
   );
 }
 export function SearchTapScreen() {
-  return <Text>Search</Text>;
+  return (
+    <View>
+      <Text>Search</Text>
+    </View>
+  );
 }
 export function NotificationTapScreen() {
-  return <Text>Notification</Text>;
+  return (
+    <View>
+      <Text>Notification</Text>
+    </View>
+  );
 }
 export function MessageTapScreen() {
-  return <Text>Message</Text>;
+  return (
+    <View>
+      <Text>Message</Text>
+    </View>
+  );
 }

@@ -7,15 +7,20 @@
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  getFocusedRouteNameFromRoute,
+  NavigationContainer,
+} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {Button, Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Icon} from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import DetailScreen from './screens/DetailScreen';
 import HeaderlessScreen from './screens/HeaderlessScreen';
 import HomeScreen from './screens/HomeScreen';
+import MainScreen from './screens/MainScreen';
+import MaterialTap from './screens/MaterialTap/MaterialTap';
 import {
   HomeTapScreen,
   MessageTapScreen,
@@ -137,24 +142,35 @@ function DrawerNavigator() {
 
 const Tab = createBottomTabNavigator();
 
+function getHeaderTitle(route) {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home';
+  const nameMap = {
+    Home: '홈',
+    Search: '검색',
+    Notification: '알림',
+    Message: '메시지',
+  };
+  return nameMap[routeName];
+}
+
 const App = () => {
   return (
     <NavigationContainer>
-      <Tab.Navigator initialRouteName="Home">
-        <Tab.Screen
-          name="Home"
-          component={HomeTapScreen}
-          options={{
-            title: '홈',
-            // tabBarIcon: ({color, size}) => (
-            //   <Icon name="home" color={color} size={size} />
-            // ),
-          }}
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Main"
+          component={MaterialTap}
+          options={({route}) => ({
+            title: getHeaderTitle(route),
+          })}
         />
-        <Tab.Screen name="Search" component={SearchTapScreen} />
-        <Tab.Screen name="Notification" component={NotificationTapScreen} />
-        <Tab.Screen name="Message" component={MessageTapScreen} />
-      </Tab.Navigator>
+        {/* <Stack.Screen
+          name="Main"
+          component={MainScreen}
+          options={{headerShown: false}}
+        /> */}
+        <Stack.Screen name="Detail" component={DetailScreen} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
