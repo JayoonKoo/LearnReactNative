@@ -5,14 +5,18 @@
  * @format
  */
 
+import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text} from 'react-native';
+import {LogContextProvider} from './context/LogContext';
+import RootStack from './screens/RootStack';
 
 const App = () => {
   return (
-    <SafeAreaView>
-      <Text>Main</Text>
-    </SafeAreaView>
+    <NavigationContainer>
+      <LogContextProvider>
+        <RootStack />
+      </LogContextProvider>
+    </NavigationContainer>
   );
 };
 
