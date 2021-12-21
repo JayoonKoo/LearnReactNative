@@ -8,14 +8,17 @@
 import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
 import {LogContextProvider} from './context/LogContext';
+import {SearchContextProvider} from './context/SearchContext';
 import RootStack from './screens/RootStack';
 
 const App = () => {
   return (
     <NavigationContainer>
-      <LogContextProvider>
-        <RootStack />
-      </LogContextProvider>
+      <SearchContextProvider>
+        <LogContextProvider>
+          <RootStack />
+        </LogContextProvider>
+      </SearchContextProvider>
     </NavigationContainer>
   );
 };

@@ -1,13 +1,46 @@
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {format} from 'date-fns';
+import {ko} from 'date-fns/locale';
+import React, {useReducer} from 'react';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import TransparentCircleButton from './TransparentCircleButton';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
-function WriteHeader({onSave}) {
+const OPEN = 'OPEN';
+const CLOASE = 'CLOASE';
+const initailState = {mode: 'date', visible: false};
+const reducer = (state, action) => {
+  switch (action.type) {
+    case OPEN:
+      return {
+        mode: action.payload,
+        visible: true,
+      };
+    case CLOASE:
+      return {
+        ...state,
+        visible: false,
+      };
+    default:
+      throw new Error('Unhandled action type');
+  }
+};
+
+function WriteHeader({onSave, onAskRemove, isEditing, date, onChangeDate}) {
   const navigation = useNavigation();
   const onGoBack = () => {
     navigation.pop();
   };
+
+  const [state, dispatch] = useReducer(reducer, initailState);
+  const open = mode => dispatch({type: OPEN, payload: mode});
+  const close = () => dispatch({type: CLOASE});
+
+  const onConfirm = selectedDate => {
+    close();
+    onChangeDate(selectedDate);
+  };
+
   return (
     <View style={styles.block}>
       <View style={styles.iconButtonWrapper}>
@@ -18,19 +51,40 @@ function WriteHeader({onSave}) {
         />
       </View>
       <View style={styles.buttons}>
-        <TransparentCircleButton
-          name="delete-forever"
-          color="#ef5350"
-          hasMarginRight
-        />
-        <View style={styles.iconButtonWrapper}>
+        {isEditing && (
           <TransparentCircleButton
-            name="check"
-            color="#009688"
-            onPress={onSave}
+            name="delete-forever"
+            color="#ef5350"
+            hasMarginRight
+            onPress={onAskRemove}
           />
-        </View>
+        )}
+        <TransparentCircleButton
+          name="check"
+          color="#009688"
+          onPress={onSave}
+        />
       </View>
+      <View style={styles.center}>
+        <Pressable onPress={() => open('date')}>
+          <Text>
+            {format(new Date(date), 'PPP', {
+              locale: ko,
+            })}
+          </Text>
+        </Pressable>
+        <View style={styles.separator} />
+        <Pressable onPress={() => open('time')}>
+          <Text>{format(new Date(date), 'p', {locale: ko})}</Text>
+        </Pressable>
+      </View>
+      <DateTimePickerModal
+        isVisible={state.visible}
+        mode={state.mode}
+        onConfirm={onConfirm}
+        onCancel={close}
+        date={date}
+      />
     </View>
   );
 }
@@ -46,6 +100,20 @@ const styles = StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  center: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: -1,
+    flexDirection: 'row',
+  },
+  separator: {
+    width: 8,
   },
 });
 
